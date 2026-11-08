@@ -401,6 +401,10 @@ pre {
   padding-top: 0.2rem;
 }
 
+.intro > h2:first-child {
+  margin-top: 0;
+}
+
 .more {
   font-family: var(--sans);
   font-size: 0.85rem;
