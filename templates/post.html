@@ -1,0 +1,18 @@
+<article class="post">
+  <header class="post-header">
+    <h1>{{ title }}</h1>
+    <p class="post-meta">
+      <time datetime="{{ date.repr.date }}">{{ date.day }} {{ date.repr.month }} {{ date.year }}</time>
+      {%- if has_tags %}
+      <span class="tags">{%- for tag in tags %} <span class="tag">#{{ tag }}</span>{%- endfor %}</span>
+      {%- endif %}
+    </p>
+  </header>
+  {%- if has_toc %}
+  <details class="toc">
+    <summary>Contents</summary>
+    {%- autoescape false -%}{{ toc }}{%- endautoescape -%}
+  </details>
+  {%- endif %}
+  {%- autoescape false -%}{{ yocaml_body }}{%- endautoescape -%}
+</article>

@@ -1,0 +1,440 @@
+/* Minimal, readable, light (parchment) / dark. */
+
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+Telugu:wght@500;600&display=swap");
+
+:root {
+  /* Light: warm parchment. */
+  --bg: #f7f0e1;
+  --fg: #2a251e;
+  --muted: #776b5a;
+  --rule: #e3d8c1;
+  --accent: #8a3b12;
+  --code-bg: #eee4cf;
+  --measure: 40rem;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Charter,
+    "Bitstream Charter", "Source Serif Pro", Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --telugu: "Noto Serif Telugu", serif;
+  --mono: "JetBrains Mono", "Iosevka", "Fira Code", ui-monospace, SFMono-Regular,
+    Menlo, Consolas, monospace;
+  color-scheme: light dark;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* Dark: follows the system unless the toggle forced light; or forced dark. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161616;
+    --fg: #e4e1dc;
+    --muted: #9a958e;
+    --rule: #2c2b29;
+    --accent: #e3a27a;
+    --code-bg: #1f1e1d;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161616;
+  --fg: #e4e1dc;
+  --muted: #9a958e;
+  --rule: #2c2b29;
+  --accent: #e3a27a;
+  --code-bg: #1f1e1d;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 112.5%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 3rem;
+  max-width: var(--measure);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--serif);
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- header / footer ---------------------------------------------------- */
+
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.site-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.6rem;
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.name-te {
+  font-family: var(--telugu);
+  font-size: 1.45rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.name-en {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.site-header nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+}
+
+.site-header nav a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.mode-toggle {
+  display: inline-flex;
+  align-self: center;
+  padding: 0;
+  color: var(--muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.mode-toggle[hidden] {
+  display: none;
+}
+
+.mode-toggle svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Show the moon in light mode (click for dark), the sun in dark mode. */
+.icon-sun {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .icon-moon {
+    display: none;
+  }
+  :root:not([data-theme="light"]) .icon-sun {
+    display: block;
+  }
+}
+
+:root[data-theme="dark"] .icon-moon {
+  display: none;
+}
+
+:root[data-theme="dark"] .icon-sun {
+  display: block;
+}
+
+.mode-toggle:hover {
+  color: var(--accent);
+}
+
+.site-header nav a:hover {
+  color: var(--accent);
+}
+
+.site-footer {
+  margin-top: 4rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.site-footer a {
+  color: inherit;
+}
+
+/* ---- typography ---------------------------------------------------------- */
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.25;
+  font-weight: 600;
+  margin: 2.2em 0 0.6em;
+}
+
+h1 {
+  font-size: 1.7rem;
+  margin-top: 0;
+}
+h2 {
+  font-size: 1.3rem;
+}
+h3 {
+  font-size: 1.1rem;
+}
+
+p,
+ul,
+ol,
+blockquote,
+pre,
+table,
+figure {
+  margin: 0 0 1.2em;
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 2.5rem 0;
+}
+
+blockquote {
+  margin-left: 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--rule);
+  color: var(--muted);
+  font-style: italic;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+figure {
+  text-align: center;
+}
+
+figcaption {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  border-bottom: 1px solid var(--rule);
+  padding: 0.35rem 0.6rem;
+  text-align: left;
+}
+
+/* ---- code ---------------------------------------------------------------- */
+
+code,
+pre {
+  font-family: var(--mono);
+  font-size: 0.82em;
+}
+
+:not(pre) > code {
+  background: var(--code-bg);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+
+pre {
+  background: var(--code-bg);
+  padding: 0.9rem 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+/* Copy button (added by site.js). */
+.code-block {
+  position: relative;
+}
+
+.code-block .copy {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  padding: 0.1rem 0.45rem;
+  font: 0.7rem var(--sans);
+  color: var(--muted);
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.code-block:hover .copy,
+.code-block .copy:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .code-block .copy {
+    opacity: 1;
+  }
+}
+
+/* D2 diagrams, inlined as SVG at build time. */
+.diagram {
+  margin: 0 0 1.2em;
+  text-align: center;
+}
+
+.diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* D2 paints a solid background rect; let the page background show through.
+   !important because D2's own (dark-mode) rules are more specific. */
+.diagram svg.d2-svg > rect:first-child {
+  fill: transparent !important;
+}
+
+/* Display math can overflow on phones. */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* ---- posts --------------------------------------------------------------- */
+
+.post-header {
+  margin-bottom: 2rem;
+}
+
+.post-header h1 {
+  margin-bottom: 0.3rem;
+}
+
+.post-meta {
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.tag {
+  margin-right: 0.4rem;
+}
+
+.toc {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  margin-bottom: 2rem;
+  color: var(--muted);
+}
+
+.toc summary {
+  cursor: pointer;
+}
+
+.toc ol,
+.toc ul {
+  margin: 0.4rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.post-list {
+  list-style: none;
+  padding: 0;
+}
+
+.post-list li {
+  display: flex;
+  gap: 1.25rem;
+  padding: 0.3rem 0;
+}
+
+.post-list time {
+  flex: 0 0 auto;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+  padding-top: 0.2rem;
+}
+
+.more {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+}
+
+/* Footnotes. cmarkit emits <section role="doc-endnotes"> with a ↩︎ backlink
+   after each note's paragraph; keep the backlink on the same line. */
+section[role="doc-endnotes"] {
+  font-size: 0.85rem;
+  color: var(--muted);
+  border-top: 1px solid var(--rule);
+  margin-top: 3rem;
+  padding-top: 1rem;
+}
+
+section[role="doc-endnotes"] li > p {
+  display: inline;
+}
+
+section[role="doc-endnotes"] a[role="doc-backlink"] {
+  margin-left: 0.3rem;
+  text-decoration: none;
+}
+
+a.fn-label {
+  text-decoration: none;
+}
+
+@media (max-width: 30rem) {
+  html {
+    font-size: 106%;
+  }
+  .post-list li {
+    flex-direction: column;
+    gap: 0;
+  }
+}

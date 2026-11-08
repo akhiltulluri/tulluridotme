@@ -1,0 +1,11 @@
+<article class="page">
+  {%- if has_page_title %}
+  <h1>{{ page_title }}</h1>
+  {%- endif %}
+  {%- autoescape false -%}{{ yocaml_body }}{%- endautoescape -%}
+  {%- if has_articles %}
+  {% include "templates/post-list.html" %}
+  {%- else %}
+  <p>Nothing here yet.</p>
+  {%- endif %}
+</article>

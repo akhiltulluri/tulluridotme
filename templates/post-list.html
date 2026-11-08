@@ -1,0 +1,8 @@
+<ul class="post-list">
+  {%- for article in articles %}
+  <li>
+    <time datetime="{{ article.date.repr.date }}">{{ article.date.repr.date }}</time>
+    <a href="{{ article.url }}/">{{ article.title }}</a>
+  </li>
+  {%- endfor %}
+</ul>

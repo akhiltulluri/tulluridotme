@@ -1,0 +1,10 @@
+<section class="intro">
+  {%- autoescape false -%}{{ yocaml_body }}{%- endautoescape -%}
+</section>
+{%- if has_articles %}
+<section>
+  <h2>Recent writing</h2>
+  {% include "templates/post-list.html" %}
+  <p class="more"><a href="/writing/">All writing →</a></p>
+</section>
+{%- endif %}

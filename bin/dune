@@ -1,0 +1,11 @@
+(executable
+ (name site)
+ (libraries
+  yocaml
+  yocaml_unix
+  yocaml_yaml
+  yocaml_cmarkit
+  yocaml_jingoo
+  yocaml_syndication
+  cmarkit
+  unix))
