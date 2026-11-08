@@ -1,6 +1,5 @@
 ---
-page_title: Home
-description: Akhil Tulluri — Research Engineer at FP Launchpad, IIT Madras. Programming Languages, Compilers, Formal Verification.
+description: Research Engineer at FP Launchpad, IIT Madras, working on Programming Languages, Compilers and Formal Verification.
 ---
 
 I'm Akhil, originally from [Guntur](https://en.wikipedia.org/wiki/Guntur) and currently living in

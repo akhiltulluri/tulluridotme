@@ -7,6 +7,19 @@
     {%- for m in meta %}
     <meta name="{{ m.name }}" content="{{ m.content }}" />
     {%- endfor %}
+    {%- if has_description %}
+    <meta property="og:description" content="{{ description }}" />
+    {%- endif %}
+    <meta property="og:title" content="{%- if has_page_title -%}{{ page_title }}{%- else -%}Akhil Tulluri{%- endif -%}" />
+    <meta property="og:site_name" content="Akhil Tulluri" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://tulluri.me/android-chrome-512x512.png" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@akhiltulluri_" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/android-chrome-192x192.png" />
     <link rel="stylesheet" href="/css/base.css" />
     <link rel="stylesheet" href="/css/pygments.css" />
     <!-- Light/dark: apply a saved choice before first paint (no flash). -->
