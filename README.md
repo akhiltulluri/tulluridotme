@@ -46,3 +46,9 @@ Markdown is CommonMark plus cmarkit's extensions:
 
 The only JS is `static/js/site.js`: copy buttons on code blocks, plus KaTeX on pages with math.
 Drafts live in `content/drafts/`, which is never built (e.g. the favorites page). Move a file into `content/pages/` or `content/writing/` to publish it.
+
+## Deploying
+
+Pushing to `main` runs `.github/workflows/deploy.yml`, which installs OCaml,
+Pygments and D2, builds the site and publishes `_site/` to GitHub Pages.
+`static/CNAME` sets the custom domain (`tulluri.me`).

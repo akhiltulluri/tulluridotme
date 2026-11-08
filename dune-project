@@ -23,4 +23,5 @@
   yocaml_yaml
   yocaml_cmarkit
   yocaml_jingoo
-  yocaml_syndication))
+  yocaml_syndication
+  cmarkit))

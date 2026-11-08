@@ -13,6 +13,7 @@ depends: [
   "yocaml_cmarkit"
   "yocaml_jingoo"
   "yocaml_syndication"
+  "cmarkit"
   "odoc" {with-doc}
 ]
 build: [
