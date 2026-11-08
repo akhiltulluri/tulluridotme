@@ -24,13 +24,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The generator only changes when bin/ or the deps change; most pushes
+      # are content-only, so reuse the compiled binary and skip OCaml entirely.
+      - name: Restore site generator
+        id: generator
+        uses: actions/cache@v4
+        with:
+          path: site-bin
+          key: site-${{ runner.os }}-${{ hashFiles('bin/**', 'dune-project', '*.opam') }}
+
       - name: Set up OCaml
+        if: steps.generator.outputs.cache-hit != 'true'
         uses: ocaml/setup-ocaml@v3
         with:
           ocaml-compiler: "5.4"
 
-      - name: Install OCaml dependencies
-        run: opam install . --deps-only --yes
+      - name: Build site generator
+        if: steps.generator.outputs.cache-hit != 'true'
+        run: |
+          opam install . --deps-only --yes
+          opam exec -- dune build bin/site.exe
+          mkdir -p site-bin
+          cp _build/default/bin/site.exe site-bin/site
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -58,7 +73,7 @@ jobs:
           d2 --version
 
       - name: Build site
-        run: opam exec -- dune exec bin/site.exe
+        run: ./site-bin/site
 
       - uses: actions/configure-pages@v5
 
