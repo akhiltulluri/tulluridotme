@@ -1,5 +1,6 @@
 // Progressive enhancement only; every page works without JS.
-// Highlighting and diagrams are rendered at build time (bin/render.ml).
+// Highlighting, diagrams and math are rendered at build time (bin/render.ml).
+// All that's left here: the light/dark toggle and copy buttons.
 
 (function () {
   // --- Light/dark toggle -----------------------------------------------------
@@ -53,36 +54,5 @@
       });
       wrap.appendChild(btn);
     });
-  }
-
-  // --- Math: $inline$ / $$display$$ (cmarkit emits \( \) and \[ \]) ---------
-  // Only fetched on pages that contain math. auto-render skips <pre>/<code>.
-  const KATEX = "https://cdn.jsdelivr.net/npm/katex@0.16.9/dist";
-  const main = document.querySelector("main");
-  const text = main ? main.textContent : "";
-  if (text.includes("\\(") || text.includes("\\[")) {
-    const css = document.createElement("link");
-    css.rel = "stylesheet";
-    css.href = KATEX + "/katex.min.css";
-    document.head.appendChild(css);
-    const load = (src) =>
-      new Promise((ok, err) => {
-        const s = document.createElement("script");
-        s.src = src;
-        s.onload = ok;
-        s.onerror = err;
-        document.head.appendChild(s);
-      });
-    load(KATEX + "/katex.min.js")
-      .then(() => load(KATEX + "/contrib/auto-render.min.js"))
-      .then(() =>
-        renderMathInElement(main, {
-          delimiters: [
-            { left: "\\[", right: "\\]", display: true },
-            { left: "\\(", right: "\\)", display: false },
-          ],
-          throwOnError: false,
-        })
-      );
   }
 })();

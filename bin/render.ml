@@ -1,8 +1,9 @@
-(* Build-time rendering of fenced code blocks, so pages ship no JS for them.
+(* Build-time rendering, so pages ship no JS for any of this.
 
    - ```d2 [sketch]   -> inline SVG via the `d2` CLI (https://d2lang.com)
    - ```<lang>        -> syntax-highlighted HTML via Pygments (tools/highlight.py)
    - ``` (no lang)    -> left to cmarkit (plain <pre><code>)
+   - $..$ $$..$$ ```math -> KaTeX HTML via Node (tools/katex.mjs)
 
    Missing tools never break the build: we warn and fall back to plain code. *)
 
@@ -182,42 +183,99 @@ let render_d2 ~options src =
   cleanup ();
   result
 
+(* ---- math ---------------------------------------------------------------- *)
+
+let katex = "tools/katex.mjs"
+
+(* Self-hosted KaTeX CSS + fonts (static/katex/); linked only on pages with math. *)
+let katex_css = {|<link rel="stylesheet" href="/katex/katex.min.css" />|}
+
+(* Render all [(display, tex)] pairs in one Node process. *)
+let render_math_all = function
+  | [] -> []
+  | items -> (
+      let input =
+        items
+        |> List.concat_map (fun (d, tex) -> [ (if d then "1" else "0"); tex ])
+        |> String.concat "\000"
+      in
+      let fallback () =
+        List.map
+          (fun (d, tex) ->
+            Printf.sprintf {|<code class="math">%s</code>|}
+              (escape (if d then "$$" ^ tex ^ "$$" else "$" ^ tex ^ "$")))
+          items
+      in
+      match filter "node" [ katex ] input with
+      | Some out ->
+          let frags = String.split_on_char '\000' out in
+          if List.length frags = List.length items then frags
+          else (
+            warn "katex returned a mismatched number of formulas";
+            fallback ())
+      | None ->
+          warn "could not run %s (did you run `npm ci`?)" katex;
+          fallback ())
+
+let raw_inline s = Inline.Raw_html (Block_line.tight_list_of_string s, Meta.none)
+
 (* ---- document transform -------------------------------------------------- *)
 
-let iter_code_blocks f doc =
+let transform doc =
+  (* Pass 1: collect code to highlight and math to typeset. *)
+  let code = ref [] and math = ref [] in
   let block _ = function
     | Block.Code_block (cb, _) ->
-        f cb;
+        (match info_of cb with
+        | Some (lang, _) when lang <> "d2" -> code := (lang, code_of cb) :: !code
+        | _ -> ());
+        Mapper.default
+    | Block.Ext_math_block (cb, _) ->
+        math := (true, code_of cb) :: !math;
         Mapper.default
     | _ -> Mapper.default
   in
-  ignore (Mapper.map_doc (Mapper.make ~block ()) doc)
-
-let transform doc =
-  (* Pass 1: collect everything that needs highlighting. *)
-  let todo = ref [] in
-  iter_code_blocks
-    (fun cb ->
-      match info_of cb with
-      | Some (lang, _) when lang <> "d2" -> todo := (lang, code_of cb) :: !todo
-      | _ -> ())
-    doc;
-  let todo = List.sort_uniq compare !todo in
-  let table = Hashtbl.create 16 in
-  List.iter2 (Hashtbl.replace table) todo (highlight_all todo);
-  (* Pass 2: replace code blocks with rendered HTML. *)
+  let inline _ = function
+    | Inline.Ext_math_span (ms, _) ->
+        math := (Inline.Math_span.display ms, Inline.Math_span.tex ms) :: !math;
+        Mapper.default
+    | _ -> Mapper.default
+  in
+  ignore (Mapper.map_doc (Mapper.make ~block ~inline ()) doc);
+  let memo items render =
+    let items = List.sort_uniq compare items in
+    let table = Hashtbl.create 16 in
+    List.iter2 (Hashtbl.replace table) items (render items);
+    Hashtbl.find table
+  in
+  let has_math = !math <> [] in
+  let highlighted = memo !code highlight_all in
+  let typeset = memo !math render_math_all in
+  (* Pass 2: replace with rendered HTML. *)
   let block _ = function
     | Block.Code_block (cb, _) -> (
         match info_of cb with
         | Some ("d2", options) ->
             Mapper.ret (html_block (render_d2 ~options (code_of cb)))
         | Some (lang, _) ->
-            let body = Hashtbl.find table (lang, code_of cb) in
-            Mapper.ret (html_block (code_html lang body))
+            Mapper.ret (html_block (code_html lang (highlighted (lang, code_of cb))))
         | None -> Mapper.default)
+    | Block.Ext_math_block (cb, _) ->
+        Mapper.ret (html_block (typeset (true, code_of cb)))
     | _ -> Mapper.default
   in
-  Mapper.map_doc (Mapper.make ~block ()) doc
+  let inline _ = function
+    | Inline.Ext_math_span (ms, _) ->
+        Mapper.ret
+          (raw_inline
+             (typeset (Inline.Math_span.display ms, Inline.Math_span.tex ms)))
+    | _ -> Mapper.default
+  in
+  let doc' = Mapper.map_doc (Mapper.make ~block ~inline ()) doc in
+  if not has_math then doc'
+  else
+    Doc.make ~defs:(Doc.defs doc')
+      (Block.Blocks ([ html_block katex_css; Doc.block doc' ], Meta.none))
 
 (* ---- YOCaml arrows ------------------------------------------------------- *)
 

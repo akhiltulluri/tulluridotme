@@ -1,4 +1,4 @@
-# Build the site with YOCaml and publish _site/ to GitHub Pages.
+# Build the site with YOCaml (plus Pygments, KaTeX and D2) and publish _site/ to GitHub Pages.
 name: deploy
 
 on:
@@ -39,6 +39,15 @@ jobs:
 
       - name: Install Pygments
         run: pip install pygments
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install KaTeX
+        run: npm ci
 
       - name: Install D2
         run: |
